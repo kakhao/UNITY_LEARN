@@ -1,0 +1,72 @@
+    #region EnumRoutes
+
+    public void EnumRoutes(int RouteSize)
+    {
+        int[] Route = new int[RouteSize];
+        //Init Route
+        for (int i = 0; i < RouteSize; i++) Route[i] = i;
+
+        CheckRoute(Route);
+
+        //Route = new int[] { 0,1,4,3,2 };
+
+        int step = RouteSize - 2;
+        int prevRoom = 0;
+
+        while(step>=0)
+        {
+            if (prevRoom==0)
+                prevRoom = Route[step]; //prepare to check next room
+
+            int minN = RouteSize;
+            int minNi = -1;
+            for (int i=step; i<RouteSize; i++)
+                if (Route[i]>prevRoom && Route[i]< minN)
+                {
+                    minN = Route[i];
+                    minNi = i;
+                }
+            if (minNi>=0)   //min found
+            {
+                //swap
+                SwapArrayEl(Route, step, minNi);
+                if (step >= RouteSize - 2) //prelast room reached
+                {
+                    CheckRoute(Route);
+                    prevRoom = 0; // reset to prepare to check next room
+                }
+                else //not prelast room, move forward
+                {
+                    step++;
+                    prevRoom = -1; //begin from smalest room 
+                }
+            }
+            else //min not found, no more rooms here, go backward
+            {
+                step--;
+                prevRoom = 0; // reset to prepare to check next room in prev step
+            }
+
+        }
+
+
+
+    }
+
+    public void SwapArrayEl(int[] _array, int i1, int i2)
+    {
+        int t = _array[i1];
+        _array[i1] = _array[i2];
+        _array[i2] = t;
+    }
+
+    public void CheckRoute(int[] _route)
+    {
+        string txt = "route:";
+        for (int i = 0; i < _route.Length; i++) txt += _route[i] + ",";
+        print(txt);
+    }
+
+
+
+    #endregion EnumRoutes
