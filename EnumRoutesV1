@@ -1,0 +1,93 @@
+   #region EnumRoutes
+
+    
+
+    public void EnumRoutes()
+    {
+        //Init Route
+        float MinD = 0;
+        GameObject[] myTargets = GameObject.FindGameObjectsWithTag("Target1");
+        GameObject myPers = GameObject.FindGameObjectWithTag("Player");
+        int RouteSize = myTargets.Length;
+        int[] Route = new int[RouteSize];
+        int[] MinRoute = new int[RouteSize];
+        for (int i = 0; i < RouteSize; i++) Route[i] = i;
+        //Prepare for Loop
+        int step = RouteSize - 1;
+        int prevRoom = -1;
+        //Loop
+        while(step>=0)
+        {
+            if (prevRoom==0)
+                prevRoom = Route[step]; //prepare to check next room
+
+            int minN = RouteSize;
+            int minNi = -1;
+            for (int i=step; i<RouteSize; i++)
+                if (Route[i]>prevRoom && Route[i]< minN)
+                {
+                    minN = Route[i];
+                    minNi = i;
+                }
+            if (minNi>=0)   //min found
+            {
+                //swap
+                SwapArrayEl(Route, step, minNi);
+                if (step >= RouteSize - 2) //prelast room reached
+                {
+                    //Check Route
+                    string txt = "route:";
+                    float d = 0;
+                    GameObject o0 = myPers;
+                    for (int i = 0; i < Route.Length; i++)
+                    {
+                        txt += Route[i] + ",";
+                        d += Vector2.Distance(o0.transform.position, myTargets[Route[i]].transform.position);
+                        o0 = myTargets[Route[i]];
+                    }
+                    if (MinD > d || MinD == 0)
+                    {
+                        MinD = d;
+                        for (int i = 0; i < RouteSize; i++)
+                            MinRoute[i] = Route[i];
+
+                    }
+                        
+
+
+
+                    print(txt+"  Distance:"+d.ToString());
+
+                    prevRoom = 0; // reset to prepare to check next room
+                }
+                else //not prelast room, move forward
+                {
+                    step++;
+                    prevRoom = -1; //begin from smalest room 
+                }
+            }
+            else //min not found, no more rooms here, go backward
+            {
+                step--;
+                prevRoom = 0; // reset to prepare to check next room in prev step
+            }
+        }
+
+        print("MinD:" + MinD.ToString());
+        string txt1= "min route:";
+        for (int i = 0; i < Route.Length; i++)
+        {
+            txt1 += MinRoute[i] + ",";
+        }
+        print(txt1);
+
+    }
+
+    public void SwapArrayEl(int[] _array, int i1, int i2)
+    {
+        int t = _array[i1];
+        _array[i1] = _array[i2];
+        _array[i2] = t;
+    }
+
+    #endregion EnumRoutes
