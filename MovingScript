@@ -50,6 +50,18 @@ public class MovingScript : MonoBehaviour
 
         rb.AddForce(forceVector);
     }
+    
+    void TerminationSystem(float pError)
+    {
+        if (Mathf.Abs(pError) > CatastroficError)
+        {
+            Destroy(gameObject, 1);
+            PIDActive = false;
+            rb.velocity = Vector3.zero;
+            transform.position = pos0;
+        }
+    }
+    
 
     void ThrowBullet(Vector3 targetPos)
     {
