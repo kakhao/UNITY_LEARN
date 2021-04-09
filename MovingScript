@@ -56,7 +56,6 @@ public class MovingScript : MonoBehaviour
         if (Mathf.Abs(pError) > CatastroficError)
         {
             Destroy(gameObject, 1);
-            PIDActive = false;
             rb.velocity = Vector3.zero;
             transform.position = pos0;
         }
