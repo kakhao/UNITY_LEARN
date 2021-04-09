@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class MovingScript : MonoBehaviour
+{
+    public GameObject bulletPrefab;
+    public float bulletInterval = 5f;
+    private float bulletTimer = 0;
+    public float ManualForceK = 4000;
+    public float CatastroficError = 10f;
+
+    private Rigidbody rb;
+    private Vector3 pos0;
+
+    public BlackBoxScript BlackBox;
+    public Transform ControlTarget;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        pos0 = transform.position;
+        bulletTimer = bulletInterval;
+    }
+
+
+    void FixedUpdate()
+    {
+        bulletTimer -= Time.deltaTime;
+        if (bulletTimer < 0)
+        {
+            bulletTimer = bulletInterval;
+            ThrowBullet(transform.position);
+        }
+
+
+        Vector3 forceVector=Vector3.zero;
+        float ControlOutput = 0;
+        float ControlError = ControlTarget.position.x - transform.position.x;
+
+        float h = Input.GetAxis("Horizontal");
+        ControlOutput = h * ManualForceK;
+
+        BlackBox.RecordValue("Error", ControlError);
+        BlackBox.RecordValue("Output", ControlOutput);
+
+        forceVector = new Vector3(ControlOutput, 0, 0);
+
+        rb.AddForce(forceVector);
+    }
+
+    void ThrowBullet(Vector3 targetPos)
+    {
+        Vector3 dpos = new Vector3(Random.Range(10f, 20f) * (Random.Range(0f,1f)>0.5f ? -1f : 1f) , 0, 0) ;
+        Vector3 pos0 = dpos+targetPos;
+        Vector3 vel0 = new Vector3((targetPos.x-pos0.x)*2, Random.Range(10f, 30f), 0);
+
+        GameObject b = Instantiate(bulletPrefab, pos0, Quaternion.identity);
+        b.GetComponent<Rigidbody>().velocity = vel0;
+        Destroy(b, 2);
+    }
+    
+
+}
